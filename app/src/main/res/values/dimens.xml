@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">8dp</dimen>
+
+    <!-- tamaño de letras-->
+    <dimen name="texto_grande">20sp</dimen>
+    <dimen name="texto_medio">16sp</dimen>
+    <dimen name="texto_pequeño">10sp</dimen>
+    <dimen name="texto_mediano">12sp</dimen>
+
+    <!-- margenes -->
+    <dimen name="dimen_grande">16dp</dimen>
+    <dimen name="dimen_medio">12dp</dimen>
+    <dimen name="dimen_pequeña">8dp</dimen>
+
+</resources>
