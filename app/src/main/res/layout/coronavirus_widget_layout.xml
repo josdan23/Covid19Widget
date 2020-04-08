@@ -17,7 +17,7 @@
     />
 
     <TextView
-        android:id="@+id/ultimo_registro"
+        android:id="@+id/fecha_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="-"
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/ultimo_registro"
+        android:layout_below="@id/fecha_txt"
         android:layout_marginTop="@dimen/texto_mediano">
 
         <LinearLayout
