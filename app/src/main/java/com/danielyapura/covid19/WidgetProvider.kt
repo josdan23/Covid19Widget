@@ -71,6 +71,7 @@ class WidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.coronavirus_widget_layout)
         views.setTextViewText(R.id.confirmadosTv, "--")
         views.setTextViewText(R.id.muertesTv, "--")
+        views.setTextViewText(R.id.recuperadosTv, "--")
         views.setTextViewText(R.id.fecha_txt, "Actualizando...")
 
         appWidgetManager.updateAppWidget(appWidgetIds, views)

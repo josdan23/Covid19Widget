@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="CONFIRMADOS"
-                android:textSize="@dimen/texto_pequeño" />
+                android:textSize="@dimen/texto_mediano" />
 
         </LinearLayout>
 
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="MUERTES"
-                android:textSize="@dimen/texto_pequeño" />
+                android:textSize="@dimen/texto_mediano" />
 
         </LinearLayout>
 
@@ -108,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="RECUPERADOS"
-                android:textSize="@dimen/texto_pequeño" />
+                android:textSize="@dimen/texto_mediano" />
 
         </LinearLayout>
 
