@@ -10,4 +10,10 @@ interface CovidAPI {
 
     @GET("/country/argentina/status/deaths/live")
     fun getDeaths(): Call<List<Data>>
+
+    @GET("/live/country/argentina")
+    fun getAllData(): Call<List<Data>>
+
+    @GET("/country/argentina/status/recovered/live")
+    fun getRecovered(): Call<List<Data>>
 }

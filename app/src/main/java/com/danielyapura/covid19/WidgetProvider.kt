@@ -9,14 +9,9 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.os.Bundle
 import android.os.SystemClock
-import android.provider.Settings
 import android.util.Log
 import android.widget.RemoteViews
-import androidx.annotation.RequiresApi
 
 /**
  * Implementation of App Widget functionality.
@@ -33,11 +28,11 @@ class WidgetProvider : AppWidgetProvider() {
     ) {
         Log.d(TAG_LOG, "OnUPDATE")
 
-        actualizarIntefaz(context, appWidgetManager, appWidgetIds)
+        resetInterfaz(context, appWidgetManager, appWidgetIds)
 
         configurarBotonActualizar(context, appWidgetManager, appWidgetIds)
 
-        obtenerDatosAlarma(context)
+        obtenerDatos(context)
 
     }
 
@@ -68,7 +63,7 @@ class WidgetProvider : AppWidgetProvider() {
         appWidgetManager.updateAppWidget(appWidgetIds, views)
     }
 
-    private fun actualizarIntefaz(
+    private fun resetInterfaz(
         context: Context,
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
@@ -89,7 +84,9 @@ class WidgetProvider : AppWidgetProvider() {
         val componentName = ComponentName(context, DownloadDataJob::class.java)
         val jobInfo: JobInfo.Builder = JobInfo.Builder(1, componentName)
 
-        jobInfo.setPeriodic(1800000)
+
+        val periodicMillis: Long = 15 * 60 * 1000
+        jobInfo.setPeriodic(periodicMillis)
 
         jobScheduler.schedule(jobInfo.build())
     }
@@ -99,9 +96,8 @@ class WidgetProvider : AppWidgetProvider() {
         Log.d(TAG_LOG, "OBTENIENDO LOS DATOS")
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, DownloadDataService::class.java)
+        val intent = Intent(context, DownloadDataIntentService::class.java)
         val pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         alarmManager.setRepeating(AlarmManager.RTC, SystemClock.elapsedRealtime(),20 * 60 * 1000 , pendingIntent)
-    }
-}
+    }}
 

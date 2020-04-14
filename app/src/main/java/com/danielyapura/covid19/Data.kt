@@ -10,4 +10,16 @@ class Data {
 
     @SerializedName("Cases")
     var cases: Int = 0
+
+    @SerializedName("Deaths")
+    var deaths: Int = 0
+
+    @SerializedName("Confirmed")
+    var confirmed: Int = 0
+
+    @SerializedName("Recovered")
+    var recovered: Int = 0
+
+    @SerializedName("Active")
+    var active = 0
 }
