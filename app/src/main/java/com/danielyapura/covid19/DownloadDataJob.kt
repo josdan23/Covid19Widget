@@ -25,8 +25,9 @@ class DownloadDataJob: JobService() {
         Log.d("JOB-SERVICES", "EJECUTAR TAREA")
         Toast.makeText(applicationContext, "Actualizando", Toast.LENGTH_SHORT).show()
 
-        val intent = Intent(applicationContext, DownloadDataIntentService::class.java)
-        startService(intent)
+        val intent = Intent(applicationContext, DownloadDataJobIntentService::class.java)
+        //startService(intent)
+        DownloadDataJobIntentService.enqueueWork(applicationContext, intent)
     }
 
 }

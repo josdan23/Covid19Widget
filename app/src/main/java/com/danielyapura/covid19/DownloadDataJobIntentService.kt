@@ -1,20 +1,31 @@
 package com.danielyapura.covid19
 
-import android.app.IntentService
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
+import androidx.core.app.JobIntentService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DownloadDataIntentService : IntentService("Mi servicio") {
+class DownloadDataJobIntentService: JobIntentService() {
 
-    override fun onHandleIntent(p0: Intent?) {
+    companion object {
+
+        val JOB_ID: Int = 1
+
+        public fun enqueueWork(context: Context, intent: Intent) {
+            enqueueWork(context, DownloadDataJobIntentService::class.java, JOB_ID, intent)
+        }
+    }
+
+
+    override fun onHandleWork(intent: Intent) {
         Log.d("INTENT_SERVICE", "INTENTE SERVICE EJECUTADO")
 
         val views = RemoteViews(packageName, R.layout.coronavirus_widget_layout)
@@ -32,7 +43,7 @@ class DownloadDataIntentService : IntentService("Mi servicio") {
         // OBTENER DATOS DE CONFIRMADOS
         val resultConfirmados: Call<List<Data>> = covidAPI.getConfirmed()
 
-        resultConfirmados.enqueue(object: Callback<List<Data>>{
+        resultConfirmados.enqueue(object: Callback<List<Data>> {
             override fun onFailure(call: Call<List<Data>>, t: Throwable) {
                 t.printStackTrace()
                 Log.d("DATOS-ERROR", "CONFIRMADOS")
@@ -47,7 +58,7 @@ class DownloadDataIntentService : IntentService("Mi servicio") {
         })
 
         //OBTENER LOS MUERTOS
-        covidAPI.getDeaths().enqueue(object: Callback<List<Data>>{
+        covidAPI.getDeaths().enqueue(object: Callback<List<Data>> {
             override fun onFailure(call: Call<List<Data>>, t: Throwable) {
                 Log.d("DATOS-ERROR", "CONFIRMADOS")
                 t.printStackTrace()
@@ -64,7 +75,7 @@ class DownloadDataIntentService : IntentService("Mi servicio") {
         })
 
         //OBTENER LOS RECUPERADOS
-        covidAPI.getRecovered().enqueue(object: Callback<List<Data>>{
+        covidAPI.getRecovered().enqueue(object: Callback<List<Data>> {
             override fun onFailure(call: Call<List<Data>>, t: Throwable) {
                 Log.d("DATOS-ERROR", "CONFIRMADOS")
                 t.printStackTrace()
@@ -81,5 +92,10 @@ class DownloadDataIntentService : IntentService("Mi servicio") {
         })
 
         widgetManager.updateAppWidget(theWidget, views)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("SERVICIO", "Destruido")
     }
 }
