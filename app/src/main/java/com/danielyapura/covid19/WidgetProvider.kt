@@ -1,13 +1,22 @@
 package com.danielyapura.covid19
 
+import android.app.AlarmManager
 import android.app.PendingIntent
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.SystemClock
+import android.provider.Settings
 import android.util.Log
 import android.widget.RemoteViews
+import androidx.annotation.RequiresApi
 
 /**
  * Implementation of App Widget functionality.
@@ -16,6 +25,7 @@ import android.widget.RemoteViews
 private const val TAG_LOG = "TAG-CORONAVIRUS"
 
 class WidgetProvider : AppWidgetProvider() {
+
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -27,8 +37,13 @@ class WidgetProvider : AppWidgetProvider() {
 
         configurarBotonActualizar(context, appWidgetManager, appWidgetIds)
 
-        val intent = Intent(context, ServicesDownloadData::class.java)
-        ServicesDownloadData.enqueueWork(context, intent)
+        obtenerDatosAlarma(context)
+
+    }
+
+    override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
+        super.onDeleted(context, appWidgetIds)
+        Log.d(TAG_LOG, "DELETED")
     }
 
     private fun configurarBotonActualizar(
@@ -39,8 +54,9 @@ class WidgetProvider : AppWidgetProvider() {
 
         val intentBoton = Intent(context, WidgetProvider::class.java)
         intentBoton.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        intentBoton.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
         val pendingIntent =
-            PendingIntent.getBroadcast(context, 0, intentBoton, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(context, 0, intentBoton, PendingIntent.FLAG_CANCEL_CURRENT)
 
         val views = RemoteViews(
             context.packageName,
@@ -65,33 +81,27 @@ class WidgetProvider : AppWidgetProvider() {
         appWidgetManager.updateAppWidget(appWidgetIds, views)
     }
 
-    override fun onReceive(context: Context?, intent: Intent?) {
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-        val thisAppWidget = ComponentName(
-            context!!,
-            WidgetProvider::class.java
-        )
+    private fun obtenerDatos(context: Context){
+        Log.d(TAG_LOG, "OBTENIENDO LOS DATOS")
 
-        val appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidget)
-        Log.d(TAG_LOG, "ONRECEIVE")
-        onUpdate(context, appWidgetManager, appWidgetIds)
+        //LLAMAR AL SERVICIO
+        val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+        val componentName = ComponentName(context, DownloadDataJob::class.java)
+        val jobInfo: JobInfo.Builder = JobInfo.Builder(1, componentName)
+
+        jobInfo.setPeriodic(1800000)
+
+        jobScheduler.schedule(jobInfo.build())
     }
 
-    override fun onEnabled(context: Context?) {
-        Log.d(TAG_LOG, "OnENABLED")
-    }
+    private fun obtenerDatosAlarma(context: Context){
 
-    override fun onRestored(context: Context?, oldWidgetIds: IntArray?, newWidgetIds: IntArray?) {
-        Log.d(TAG_LOG, "OnRESTORED")
-    }
+        Log.d(TAG_LOG, "OBTENIENDO LOS DATOS")
 
-    override fun onDisabled(context: Context?) {
-        Log.d(TAG_LOG, "OnDISABLED")
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, DownloadDataService::class.java)
+        val pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        alarmManager.setRepeating(AlarmManager.RTC, SystemClock.elapsedRealtime(),20 * 60 * 1000 , pendingIntent)
     }
-
-    override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
-        Log.d(TAG_LOG, "OnDELETE")
-    }
-
 }
 
