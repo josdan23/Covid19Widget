@@ -11,13 +11,13 @@ class Data {
     @SerializedName("Cases")
     var cases: Int = 0
 
-    @SerializedName("Deaths")
+    @SerializedName("deaths")
     var deaths: Int = 0
 
-    @SerializedName("Confirmed")
+    @SerializedName("confirmed")
     var confirmed: Int = 0
 
-    @SerializedName("Recovered")
+    @SerializedName("recovered")
     var recovered: Int = 0
 
     @SerializedName("Active")

@@ -1,6 +1,5 @@
 package com.danielyapura.covid19
 
-import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
@@ -9,9 +8,13 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.SystemClock
+import android.net.Uri
+import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
 import android.util.Log
 import android.widget.RemoteViews
+import androidx.annotation.RequiresApi
 
 /**
  * Implementation of App Widget functionality.
@@ -21,6 +24,7 @@ private const val TAG_LOG = "TAG-CORONAVIRUS"
 
 class WidgetProvider : AppWidgetProvider() {
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -31,6 +35,18 @@ class WidgetProvider : AppWidgetProvider() {
         resetInterfaz(context, appWidgetManager, appWidgetIds)
 
         configurarBotonActualizar(context, appWidgetManager, appWidgetIds)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Log.d(TAG_LOG, "DENTRO DEL IF")
+            val powerManager = context?.getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
+                val intent = Intent();
+                intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                intent.data = (Uri.parse("package:" + context.packageName))
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(intent)
+            }
+        }
 
         obtenerDatos(context)
 
@@ -69,10 +85,9 @@ class WidgetProvider : AppWidgetProvider() {
         appWidgetIds: IntArray
     ) {
         val views = RemoteViews(context.packageName, R.layout.coronavirus_widget_layout)
-        views.setTextViewText(R.id.confirmadosTv, "--")
-        views.setTextViewText(R.id.muertesTv, "--")
-        views.setTextViewText(R.id.recuperadosTv, "--")
-        views.setTextViewText(R.id.fecha_txt, "Actualizando...")
+        views.apply {
+            setTextViewText(R.id.fecha_txt, "Actualizando...")
+        }
 
         appWidgetManager.updateAppWidget(appWidgetIds, views)
     }
@@ -85,20 +100,9 @@ class WidgetProvider : AppWidgetProvider() {
         val componentName = ComponentName(context, DownloadDataJob::class.java)
         val jobInfo: JobInfo.Builder = JobInfo.Builder(1, componentName)
 
-
-        val periodicMillis: Long = 15 * 60 * 1000
-        jobInfo.setPeriodic(periodicMillis)
-
+        jobInfo.setOverrideDeadline(0)
         jobScheduler.schedule(jobInfo.build())
     }
 
-    private fun obtenerDatosAlarma(context: Context){
-
-        Log.d(TAG_LOG, "OBTENIENDO LOS DATOS")
-
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, DownloadDataIntentService::class.java)
-        val pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        alarmManager.setRepeating(AlarmManager.RTC, SystemClock.elapsedRealtime(),20 * 60 * 1000 , pendingIntent)
-    }}
+}
 

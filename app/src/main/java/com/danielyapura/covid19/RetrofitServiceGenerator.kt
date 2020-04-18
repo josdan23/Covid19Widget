@@ -11,16 +11,17 @@ class RetrofitServiceGenerator {
 
     companion object {
         val BASE_URL = "https://api.covid19api.com"
+        val URL_API = "https://api.covid19data.cloud"
 
         val okHttpClient = OkHttpClient.Builder()
-            .callTimeout(3, TimeUnit.MINUTES)
-            .connectTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .writeTimeout(2, TimeUnit.MINUTES)
+            .callTimeout(5, TimeUnit.MINUTES)
+            .connectTimeout(5, TimeUnit.MINUTES)
+            .readTimeout(5, TimeUnit.MINUTES)
+            .writeTimeout(5, TimeUnit.MINUTES)
             .build()
 
         val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(URL_API)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
